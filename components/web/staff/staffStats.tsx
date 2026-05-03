@@ -10,9 +10,10 @@ import {
 } from "lucide-react";
 import { ReactNode, useEffect } from "react";
 import { toast } from "sonner";
+import { STAFF_METRICS_QKEY } from "@/lib/constants/general";
 export default function StaffStats() {
   const { data, isPending, error } = useQuery({
-    queryKey: ["staffStats"],
+    queryKey: [STAFF_METRICS_QKEY],
     queryFn: getStaffStats,
   });
   const stats: {

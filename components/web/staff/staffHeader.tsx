@@ -1,4 +1,4 @@
-import InviteStaffButton from "./inviteStaffButton";
+import InviteStaffModal from "./inviteStaffModal";
 export default function StaffHeader() {
   return (
     <header className="flex w-full justify-between items-center">
@@ -6,7 +6,7 @@ export default function StaffHeader() {
         <h2 className="font-medium text-2xl">Staff Management</h2>
         <p className="text-muted-foreground">Manage Staff Access</p>
       </div>
-      <InviteStaffButton />
+      <InviteStaffModal />
     </header>
   );
 }

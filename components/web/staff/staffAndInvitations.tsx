@@ -1,14 +1,25 @@
 "use client";
 import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
 import { normalizeText } from "@/lib/utils";
-import { useState } from "react";
+import dynamic from "next/dynamic";
+import StaffTab from "./staffTab";
+import { Tab } from "@/lib/types/general";
+import useGetStaffSearchParams from "@/lib/hooks/useGetStaffSearchParams";
 
-enum Tab {
-  STAFF = "staff",
-  INVITATIONS = "invitations",
-}
+const InvitationsTab = dynamic(() => import("./invitationsTab"));
 export default function StaffAndInvitations() {
-  const [activeTab, setActiveTab] = useState(Tab.STAFF);
+  const {
+    search,
+    role,
+    page,
+    isActive,
+    isUsed,
+    isExpired,
+    setActiveTab,
+    activeTab,
+    limit,
+  } = useGetStaffSearchParams();
+  const emailQuery = search;
 
   const tabTriggerCompmnents = Object.values(Tab).map((tab) => {
     const title = normalizeText(tab);
@@ -19,8 +30,24 @@ export default function StaffAndInvitations() {
     );
   });
   const tabs: Record<Tab, React.ReactNode> = {
-    [Tab.STAFF]: <></>,
-    [Tab.INVITATIONS]: <></>,
+    [Tab.STAFF]: (
+      <StaffTab
+        page={page}
+        emailQuery={emailQuery}
+        role={role}
+        isActive={isActive}
+        limit={limit}
+      />
+    ),
+    [Tab.INVITATIONS]: (
+      <InvitationsTab
+        page={page}
+        emailQuery={emailQuery}
+        isUsed={isUsed}
+        isExpired={isExpired}
+        limit={limit}
+      />
+    ),
   };
   const tabComponents = Object.entries(tabs).map(([key, component]) => (
     <TabsContent key={key} value={key}>
@@ -29,8 +56,10 @@ export default function StaffAndInvitations() {
   ));
   return (
     <>
-      <Tabs defaultValue={Tab.STAFF} onValueChange={setActiveTab}>
-        <TabsList>{tabTriggerCompmnents}</TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList variant="line" className="gap-x-3!">
+          {tabTriggerCompmnents}
+        </TabsList>
         {tabComponents}
       </Tabs>
     </>

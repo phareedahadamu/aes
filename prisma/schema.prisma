@@ -88,3 +88,88 @@ enum Role {
   ADMIN
   OPERATIONS
 }
+
+
+model Ward {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  streets   Street[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ward")
+}
+
+model Street {
+  id         String     @id @default(uuid())
+  code       String     @unique
+  name       String
+  isActive   Boolean    @default(true)
+  wardId     String
+  ward       Ward       @relation(fields: [wardId], references: [id])
+  properties Property[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  
+  @@unique([wardId, name])
+  @@map("street")
+}
+
+model Property {
+  id         String   @id @default(uuid())
+  code       String   @unique
+  address    String
+  isActive   Boolean  @default(true)
+  balance    Float    @default(0)
+  streetId   String
+  street     Street   @relation(fields: [streetId], references: [id])
+  ownerId    String?
+  owner      Customer? @relation(fields: [ownerId], references: [id])
+  units      Unit[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  
+  @@unique([streetId, address])
+  @@map("property")
+}
+
+model Unit {
+  id          String    @id @default(uuid())
+  quantity    Int       @default(1)
+  propertyId  String
+  property    Property  @relation(fields: [propertyId], references: [id])
+  componentId String
+  component   Component @relation(fields: [componentId], references: [id])
+
+  @@map("unit")
+}
+
+model Component {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String   @unique
+  price     Float
+  isActive  Boolean  @default(true)
+  units     Unit[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("component")
+}
+
+model Customer {
+  id         String     @id @default(uuid())
+  email      String     @unique
+  name       String
+  phoneNo    String?
+  isActive   Boolean    @default(true)
+  properties Property[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("customer")
+}

@@ -5,8 +5,8 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen flex w-full">
-      <section className="basis-[50%] bg-info2 flex flex-col  px-12.5 h-screen justify-center gap-11">
+    <main className="flex w-full">
+      <section className="basis-[50%] bg-info2 flex flex-col  px-12.5 h-screen justify-center gap-11 overflow-y-hidden">
         <Image
           width={127}
           height={139}
@@ -40,7 +40,7 @@ export default async function AuthLayout({
           </div>
         </div>
       </section>
-      <section className="basis-[50%] flex justify-center items-center">
+      <section className="basis-[50%] flex justify-center items-center h-screen overflow-y-auto">
         {children}
       </section>
     </main>
