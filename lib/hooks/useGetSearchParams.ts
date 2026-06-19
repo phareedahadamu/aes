@@ -12,7 +12,7 @@ function isValidRole(val: string | null): val is Role {
   if (!val) return false;
   return (Object.values(Role) as string[]).includes(val);
 }
-export default function useGetStaffSearchParams() {
+export default function useGetSearchParams() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();

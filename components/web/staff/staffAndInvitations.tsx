@@ -4,7 +4,7 @@ import { normalizeText } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import StaffTab from "./staffTab";
 import { Tab } from "@/lib/types/general";
-import useGetStaffSearchParams from "@/lib/hooks/useGetStaffSearchParams";
+import useGetSearchParams from "@/lib/hooks/useGetSearchParams";
 
 const InvitationsTab = dynamic(() => import("./invitationsTab"));
 export default function StaffAndInvitations() {
@@ -18,7 +18,7 @@ export default function StaffAndInvitations() {
     setActiveTab,
     activeTab,
     limit,
-  } = useGetStaffSearchParams();
+  } = useGetSearchParams();
   const emailQuery = search;
 
   const tabTriggerCompmnents = Object.values(Tab).map((tab) => {

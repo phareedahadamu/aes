@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Role } from "@/generated/prisma/client";
+import { Role } from "@/generated/prisma/enums";
 import PaginationWrapped from "../navigation/paginationWrapped";
 import { getPaginatedStaff } from "@/lib/dal/staff/getStaff";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
@@ -125,6 +125,7 @@ export default function StaffTable({
         totalPages={pagination.totalPages}
         currentLimit={limit}
         totalItems={pagination.totalItems}
+        itemCount={pagination.itemCount}
       />
       {alertOpen && staff && (
         <DeactivateOrActivateStaff

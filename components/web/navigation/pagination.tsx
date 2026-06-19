@@ -24,11 +24,13 @@ export default function Pagination({
   totalPages,
   currentLimit,
   totalItems,
+  itemCount,
 }: {
   currentPage: number;
   totalPages: number;
   currentLimit?: PAGE_LIMITS;
   totalItems: number;
+  itemCount: number;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -74,15 +76,16 @@ export default function Pagination({
         <div className="flex items-center gap-2 w-fit text-lg text-chart-3 text-nowrap">
           <p>
             Showing{" "}
-            <span className="font-medium">
-              {(currentPage - 1) * currentLimit + 1}
-            </span>{" "}
-            to{" "}
-            <span className="font-medium">
-              {currentLimit * currentPage > totalPages
-                ? totalPages
-                : currentLimit * currentPage}
-            </span>{" "}
+            {totalItems > 0 ? (
+              <>
+                <span className="font-medium">
+                  {(currentPage - 1) * currentLimit + 1}
+                </span>{" "}
+                to <span className="font-medium">{itemCount}</span>{" "}
+              </>
+            ) : (
+              <span className="font-medium">0</span>
+            )}
             of <span className="font-medium">{totalItems}</span> results
           </p>
           <span>|</span>

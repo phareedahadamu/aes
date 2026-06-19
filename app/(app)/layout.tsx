@@ -16,9 +16,11 @@ export default async function AppLayout({
   return (
     <main className="w-full flex">
       <SideBar role={(user as User).role} />
-      <section className="w-full flex flex-col h-screen overflow-y-auto bg-muted">
+      <section className="w-full flex flex-col bg-muted">
         <AppHeader user={user as User} />
-        <section className="pt-4.5 pl-7.5 pr-6 pb-7.5">{children}</section>
+        <section className="pt-4.5 pl-7.5 pr-6 pb-7.5 min-h-[calc(100dvh - 92px)] h-full">
+          {children}
+        </section>
       </section>
     </main>
   );

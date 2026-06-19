@@ -29,7 +29,27 @@ export default function RootLayout({
         <main>
           <Providers>{children}</Providers>
         </main>
-        <Toaster />
+        <Toaster
+          duration={Infinity}
+          closeButton={true}
+          toastOptions={{
+            unstyled: true,
+
+            classNames: {
+              toast:
+                "group toast border-l-4 border bg-background border-border flex gap-2 p-5 min-w-50 rounded-mid text-foreground",
+
+              title: "text-base font-medium",
+              description: "text-sm text-muted-foreground",
+
+              success: "border-l-success ",
+
+              error: "border-l-destructive",
+
+              icon: "group-[.success]:!text-success group-[.error]:!text-destructive",
+            },
+          }}
+        />
       </body>
     </html>
   );

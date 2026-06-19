@@ -126,6 +126,7 @@ export default function InvitationsTable({
         totalPages={pagination.totalPages}
         currentLimit={limit}
         totalItems={pagination.totalItems}
+        itemCount={pagination.itemCount}
       />
       {selectedInvitation && revokeOpen && (
         <RevokeInvitation

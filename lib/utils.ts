@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as z from "zod";
 import { AppError } from "./classes";
+import { Role } from "@/generated/prisma/enums";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -91,4 +92,52 @@ export function debounce<T extends (...args: string[]) => void>(
       func(...args);
     }, wait);
   };
+}
+
+export const customScrollbar = [
+  "[&::-webkit-scrollbar]:w-1.5",
+  "[&::-webkit-scrollbar]:h-1.5",
+
+  "[&::-webkit-scrollbar-thumb]:bg-gray-300",
+  "[&::-webkit-scrollbar-thumb]:rounded-md",
+
+  "[&::-webkit-scrollbar-thumb]:transition-colors",
+  "[&::-webkit-scrollbar-thumb]:duration-200",
+  "[&::-webkit-scrollbar-thumb:hover]:bg-gray-400",
+];
+
+export function getActiveFilters({
+  role,
+  isActive,
+  isUsed,
+  isExpired,
+}: {
+  role?: Role;
+  isActive?: boolean;
+  isUsed?: boolean;
+  isExpired?: boolean;
+}) {
+  const activeFilters: string[] = [];
+  if (role) {
+    activeFilters.push(normalizeText(role));
+  }
+  if (typeof isActive === "boolean" && !isActive) {
+    activeFilters.push("Disabled");
+  }
+  if (isActive) {
+    activeFilters.push("Active");
+  }
+  if (typeof isUsed === "boolean" && !isUsed) {
+    activeFilters.push("Unused");
+  }
+  if (isUsed) {
+    activeFilters.push("Used");
+  }
+  if (typeof isExpired === "boolean" && !isExpired) {
+    activeFilters.push("Active");
+  }
+  if (isExpired) {
+    activeFilters.push("Expired");
+  }
+  return activeFilters;
 }

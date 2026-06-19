@@ -128,48 +128,92 @@ model Property {
   street     Street   @relation(fields: [streetId], references: [id])
   ownerId    String?
   owner      Customer? @relation(fields: [ownerId], references: [id])
-  units      Unit[]
+  composition     Composition[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  payments Payment[]
+  charges Charge[]
 
   
   @@unique([streetId, address])
   @@map("property")
 }
 
-model Unit {
+model Composition {
   id          String    @id @default(uuid())
   quantity    Int       @default(1)
   propertyId  String
   property    Property  @relation(fields: [propertyId], references: [id])
-  componentId String
-  component   Component @relation(fields: [componentId], references: [id])
+  unitId String
+  unit   Unit @relation(fields: [unitId], references: [id])
 
-  @@map("unit")
+  @@map("composition")
 }
 
-model Component {
+model Unit {
   id        String   @id @default(uuid())
   code      String   @unique
   name      String   @unique
   price     Float
   isActive  Boolean  @default(true)
-  units     Unit[]
+
+  compositions Composition[] 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("component")
+  @@map("unit")
 }
 
 model Customer {
   id         String     @id @default(uuid())
-  email      String     @unique
+  email      String?    @unique
   name       String
-  phoneNo    String?
+  phoneNo    String     @unique
+  address    String
   isActive   Boolean    @default(true)
   properties Property[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 
   @@map("customer")
+}
+
+model Payment {
+  id         String   @id @default(uuid())
+  amount     Float    
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("payment")
+}
+
+
+model Charge {
+  id          String       @id @default(uuid())
+  amount      Float        
+  description String?  
+  propertyId  String
+  property    Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  items       ChargeItem[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("charge")
+}
+
+model ChargeItem {
+  id          String @id @default(uuid())
+  chargeId    String
+  charge      Charge @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+  unitId      String 
+  unitName    String 
+  unitCode    String
+  unitAmount  Float  
+  quantity    Int   
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt 
+
+  @@map("charge_item")
 }

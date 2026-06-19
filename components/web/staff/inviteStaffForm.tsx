@@ -1,14 +1,7 @@
 "use client";
-import {
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Info, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   Field,
   FieldLabel,
@@ -30,12 +23,19 @@ import {
 } from "@/components/ui/select";
 import { normalizeText } from "@/lib/utils";
 import { toast } from "sonner";
-import { useActionState, useEffect, startTransition } from "react";
+import {
+  useActionState,
+  useEffect,
+  startTransition,
+  useEffectEvent,
+} from "react";
 import {
   sendStaffInvite,
   resendStaffInvite,
 } from "@/lib/dal/staff/inviteStaff";
 import * as z from "zod";
+import { ALL_INVITATIONS_QKEY } from "@/lib/constants/general";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function InviteStaffForm() {
   const [sendResponse, sendAction, isPendingSend] = useActionState(
@@ -77,17 +77,26 @@ export default function InviteStaffForm() {
       }
     });
   };
-
+  const queryClient = useQueryClient();
+  const invalidateQuery = useEffectEvent(() => {
+    queryClient.invalidateQueries({
+      queryKey: [ALL_INVITATIONS_QKEY],
+    });
+  });
   useEffect(() => {
     if (sendResponse) {
-      if (sendResponse.success) toast.success(sendResponse.data.message);
-      else toast.error(sendResponse.data.message);
+      if (sendResponse.success) {
+        toast.success(sendResponse.data.message);
+        invalidateQuery();
+      } else toast.error(sendResponse.data.message);
     }
   }, [sendResponse]);
   useEffect(() => {
     if (resendResponse) {
-      if (resendResponse.success) toast.success(resendResponse.message);
-      else toast.error(resendResponse.message);
+      if (resendResponse.success) {
+        toast.success(resendResponse.message);
+        invalidateQuery();
+      } else toast.error(resendResponse.message);
     }
   }, [resendResponse]);
 

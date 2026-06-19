@@ -2,6 +2,7 @@
 import SearchResultFilterText from "../inputsAndFilters/searchResultFilterText";
 import InvitationsTable from "./invitationsTable";
 import { PAGE_LIMITS } from "@/lib/constants/general";
+import { getActiveFilters } from "@/lib/utils";
 export default function InvitationsTab({
   page,
   emailQuery,
@@ -15,28 +16,11 @@ export default function InvitationsTab({
   isExpired: boolean | undefined;
   limit: PAGE_LIMITS;
 }) {
-  function getActiveFilters() {
-    const activeFilters: string[] = [];
-
-    if (typeof isUsed === "boolean" && !isUsed) {
-      activeFilters.push("Unused");
-    }
-    if (isUsed) {
-      activeFilters.push("Used");
-    }
-    if (typeof isExpired === "boolean" && !isExpired) {
-      activeFilters.push("Active");
-    }
-    if (isExpired) {
-      activeFilters.push("Expired");
-    }
-    return activeFilters;
-  }
   return (
     <section className="flex flex-col gap-6">
       <SearchResultFilterText
         searchQuery={emailQuery}
-        filters={getActiveFilters()}
+        filters={getActiveFilters({ isUsed, isExpired })}
       />
 
       <InvitationsTable

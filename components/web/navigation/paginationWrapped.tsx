@@ -8,11 +8,13 @@ export default function PaginationWrapped({
   totalPages,
   currentLimit,
   totalItems,
+  itemCount,
 }: {
   currentPage: number;
   totalPages: number;
   currentLimit?: PAGE_LIMITS;
   totalItems: number;
+  itemCount: number;
 }) {
   return (
     <Suspense
@@ -27,6 +29,7 @@ export default function PaginationWrapped({
         totalPages={totalPages}
         currentLimit={currentLimit}
         totalItems={totalItems}
+        itemCount={itemCount}
       />
     </Suspense>
   );

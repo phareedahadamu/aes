@@ -5,6 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { headers } from "next/headers";
 import { cache } from "react";
 import { Role } from "@/generated/prisma/enums";
+import { createAuthMiddleware, APIError } from "better-auth/api";
 
 export const auth = betterAuth({
   session: {
@@ -37,6 +38,39 @@ export const auth = betterAuth({
         required: false,
         defaultValue: false,
         input: false,
+      },
+    },
+  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-in/email") {
+        const { email } = ctx.body;
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (user && !user.isActive) {
+          throw new APIError("UNAUTHORIZED", {
+            message: "User account is inactive",
+          });
+        }
+      }
+    }),
+  },
+
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          await prisma.session.updateMany({
+            where: {
+              userId: session.userId,
+              expiresAt: { gt: new Date() },
+            },
+            data: {
+              expiresAt: new Date(0),
+            },
+          });
+          return { data: session };
+        },
       },
     },
   },

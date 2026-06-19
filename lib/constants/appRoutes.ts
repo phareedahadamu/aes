@@ -10,14 +10,15 @@ import {
   FileChartColumn,
   ScrollText,
   UserRoundCog,
+  Component,
 } from "lucide-react";
 import { Role } from "@/generated/prisma/enums";
-
 
 enum NavGroup {
   OVERVIEW = "Overview",
   FINANCE = "Finance",
   SYSTEM = "System",
+  SETTINGS = "Settings",
 }
 interface NavItems {
   group: NavGroup;
@@ -102,6 +103,13 @@ export const appRoutes: NavItems[] = [
     href: "/activity-logs",
     visibleTo: [Role.ADMIN],
     icon: ScrollText,
+  },
+  {
+    group: NavGroup.SETTINGS,
+    name: "Property Units",
+    href: "/property-units",
+    visibleTo: [Role.ADMIN, Role.OPERATIONS, Role.REPORTS],
+    icon: Component,
   },
 ];
 export const navSections: NavSections[] = Object.values(NavGroup).map(

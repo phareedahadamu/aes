@@ -6,7 +6,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useMemo, useState } from "react";
 import { debounce } from "@/lib/utils";
 export default function SearchBar({ placeholder }: { placeholder: string }) {
   const router = useRouter();
@@ -16,21 +16,19 @@ export default function SearchBar({ placeholder }: { placeholder: string }) {
   const [inputValue, setInputValue] = useState(
     searchParams.get("search") ?? "",
   );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedUpdateUrl = useCallback(
-    debounce((query: string) => {
+  const debouncedUpdateUrl = useMemo(() => {
+    return debounce((query: string) => {
       const params = new URLSearchParams(searchParams.toString());
+
       if (query) {
         params.set("search", query);
       } else {
         params.delete("search");
       }
 
-      // Use router.replace to avoid clogging the browser history with every single search step
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    }, 300),
-    [pathname, router, searchParams],
-  );
+    }, 300);
+  }, [pathname, router, searchParams]);
 
   const handleUpdateSearchQuery = (newValue: string) => {
     setInputValue(newValue);

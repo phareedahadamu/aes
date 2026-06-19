@@ -17,7 +17,6 @@ import { Suspense } from "react";
 import SearchBarWrapped from "@/components/web/inputsAndFilters/searchBarWrapped";
 import StaffInvitationsFilter from "@/components/web/staff/staffInvitationsFilter";
 import Loader from "@/components/web/loaders-and-skeletons/loader";
-import FullPageLoader from "@/components/web/loaders-and-skeletons/fullPageLoader";
 
 export default async function StaffPageContent() {
   const queryClient = getQueryClient();
@@ -27,52 +26,50 @@ export default async function StaffPageContent() {
     queryFn: getStaffStats,
   });
 
+  const staffPayload = {
+    page: 1,
+    limit: PAGE_LIMITS.SM,
+    emailQuery: undefined,
+    isActive: undefined,
+    role: undefined,
+  };
   await queryClient.prefetchQuery({
-    queryKey: [ALL_STAFF_QKEY],
-    queryFn: () =>
-      getPaginatedStaff({
-        page: 1,
-        limit: PAGE_LIMITS.SM,
-        emailQuery: undefined,
-        isActive: undefined,
-        role: undefined,
-      }),
+    queryKey: [ALL_STAFF_QKEY, staffPayload],
+    queryFn: () => getPaginatedStaff(staffPayload),
   });
 
+  const invitationsPayload = {
+    page: 1,
+    limit: PAGE_LIMITS.SM,
+    emailQuery: undefined,
+    isUsed: undefined,
+    isExpired: undefined,
+  };
   await queryClient.prefetchQuery({
-    queryKey: [ALL_INVITATIONS_QKEY],
-    queryFn: () =>
-      getPaginatedInvitations({
-        page: 1,
-        limit: PAGE_LIMITS.SM,
-        emailQuery: undefined,
-        isUsed: undefined,
-        isExpired: undefined,
-      }),
+    queryKey: [ALL_INVITATIONS_QKEY, invitationsPayload],
+    queryFn: () => getPaginatedInvitations(invitationsPayload),
   });
 
   return (
-    <Suspense fallback={<FullPageLoader />}>
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <section className="w-full flex flex-col gap-4.5">
-          <StaffStats />
-          <section className="bg-background rounded-mid border border-border w-full p-4 flex flex-col gap-8">
-            <div className="w-full flex gap-3 items-center">
-              <SearchBarWrapped placeholder="Search by email" />
-              <StaffInvitationsFilter />
-            </div>
-            <Suspense
-              fallback={
-                <div className="w-full flex justify-center py-10">
-                  <Loader />
-                </div>
-              }
-            >
-              <StaffAndInvitations />
-            </Suspense>
-          </section>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <section className="w-full flex flex-col gap-4.5">
+        <StaffStats />
+        <section className="bg-background rounded-mid border border-border w-full p-4 flex flex-col gap-8">
+          <div className="w-full flex gap-3 items-center">
+            <SearchBarWrapped placeholder="Search by email" />
+            <StaffInvitationsFilter />
+          </div>
+          <Suspense
+            fallback={
+              <div className="w-full flex justify-center py-10">
+                <Loader />
+              </div>
+            }
+          >
+            <StaffAndInvitations />
+          </Suspense>
         </section>
-      </HydrationBoundary>
-    </Suspense>
+      </section>
+    </HydrationBoundary>
   );
 }
