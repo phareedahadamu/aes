@@ -298,22 +298,24 @@ export async function getCustomersSearched({
     );
 
     const where: CustomerWhereInput = {
-      ...(parsedData.searchQuery && {
-        OR: [
-          {
-            email: {
-              contains: parsedData.searchQuery,
-              mode: "insensitive",
-            },
-          },
-          {
-            name: {
-              contains: parsedData.searchQuery,
-              mode: "insensitive",
-            },
-          },
-        ],
-      }),
+      ...(parsedData.searchQuery
+        ? {
+            OR: [
+              {
+                email: {
+                  contains: parsedData.searchQuery,
+                  mode: "insensitive",
+                },
+              },
+              {
+                name: {
+                  contains: parsedData.searchQuery,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : undefined),
     };
     const [customers, totalItems] = await Promise.all([
       prisma.customer.findMany({

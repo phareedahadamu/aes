@@ -14,6 +14,7 @@ import { Info } from "lucide-react";
 import { normalizeText } from "@/lib/utils";
 import type { Street } from "@/generated/prisma/client";
 import { Dispatch, SetStateAction } from "react";
+import { TButtonVariant } from "@/lib/types/general";
 
 const AddEditStreetForm = dynamic(() => import("./addEditStreetForm"), {
   ssr: false,
@@ -29,13 +30,15 @@ export default function AddEditStreetModal({
   action,
   street,
   wardId,
-}:
+  variant = "outline"
+}: 
   | {
       street: Street;
       action: "edit";
       isOpen: boolean;
       setIsOpen: Dispatch<SetStateAction<boolean>>;
       wardId: string;
+      variant?: TButtonVariant
     }
   | {
       street?: never;
@@ -43,6 +46,7 @@ export default function AddEditStreetModal({
       isOpen?: never;
       setIsOpen?: never;
       wardId: string;
+      variant?: TButtonVariant
     }) {
   const normalizedAction = normalizeText(action);
   const description =
@@ -60,9 +64,10 @@ export default function AddEditStreetModal({
           render={
             <Button
               className="py-3! px-11! rounded-mid gap-2.5! text-base! border-primary! text-primary!"
-              variant="outline"
+              variant={variant}
             >
-              <Plus className="size-6" /> {normalizedAction} Street
+              <Plus className={`${variant === "link" ? "size-3" : "size-6"}`} />{" "}
+              {normalizedAction} Ward
             </Button>
           }
         />

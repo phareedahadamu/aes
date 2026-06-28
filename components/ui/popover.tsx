@@ -19,12 +19,13 @@ function PopoverContent({
   alignOffset = 0,
   side = "bottom",
   sideOffset = 4,
+  anchorRef,
   ...props
 }: PopoverPrimitive.Popup.Props &
   Pick<
     PopoverPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset"
-  >) {
+  > & { anchorRef?: React.RefObject<HTMLDivElement | null> }) {
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Positioner
@@ -33,6 +34,7 @@ function PopoverContent({
         side={side}
         sideOffset={sideOffset}
         className="isolate z-50"
+        anchor={anchorRef}
       >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
@@ -79,9 +81,6 @@ function PopoverDescription({
     />
   );
 }
-function PopoverPositioner({ ...props }: PopoverPrimitive.Positioner.Props) {
-  return <PopoverPrimitive.Positioner {...props} />;
-}
 export {
   Popover,
   PopoverContent,
@@ -89,5 +88,4 @@ export {
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-  PopoverPositioner,
 };

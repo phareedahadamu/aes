@@ -90,7 +90,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 export type TButtonVariant = VariantProps<typeof buttonVariants>["variant"];
 
-interface Property {
+export interface Property {
   owner: {
     ownerId: string;
   };

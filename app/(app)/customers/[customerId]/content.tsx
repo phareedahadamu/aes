@@ -19,6 +19,8 @@ import CustomerDetailsCard from "@/components/web/customers/customerDetailsCard"
 import CustomersPropertiesTable from "@/components/web/customers/customersPropertiesTable";
 import CustomerPropertiesFilter from "@/components/web/customers/customerProperiesFilter";
 import ExportButton from "@/components/web/export/exportButton";
+import PageHeader from "@/components/web/pageHeader";
+import AddPropertyWrapper from "@/components/web/properties/addPropertyWrapper";
 
 export default async function CustomerDetailsPageContent({
   customerId,
@@ -50,6 +52,11 @@ export default async function CustomerDetailsPageContent({
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
+      <PageHeader
+        title={"Customer profile"}
+        description={"Manage and update customer profile."}
+        actionButton={<AddPropertyWrapper customerId={customerId} />}
+      />
       <section className="w-full flex flex-col gap-4.5">
         <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
           <CustomerDetailsCard customerId={customerId} />

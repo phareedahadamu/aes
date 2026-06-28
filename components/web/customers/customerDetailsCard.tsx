@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
 import { useState } from "react";
 import AddEditCustomerModal from "./addEditCustomerModal";
-import PageDetailsCardSkeleton from "../pageDetailsCardSkeleton";
-import { Mail, Phone, MapPinHouse, House } from "lucide-react";
 export default function CustomerDetailsCard({
   customerId,
 }: {

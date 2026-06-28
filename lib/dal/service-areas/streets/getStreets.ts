@@ -122,3 +122,109 @@ export async function getPaginatedStreets({
     };
   }
 }
+
+export async function getStreetsSearched({
+  page = 1,
+  limit = PAGE_LIMITS.SM,
+  searchQuery,
+  isActive,
+  wardId,
+}: IGetStreetsProps): Promise<{
+  success: boolean;
+  message: string;
+  data: {
+    streets: TStreamlinedStreet[];
+    pagination: IPagination;
+  } | null;
+}> {
+  try {
+    const user = await getAuthUser();
+    if (!user) {
+      return {
+        success: false,
+        data: null,
+        message: "Unauthorized. Sign in to access streets details",
+      };
+    }
+    if (!user.isActive) {
+      return {
+        success: false,
+        data: null,
+        message: "Unauthorized. Disabled account.",
+      };
+    }
+    const parsedData = sanitizePayload(
+      {
+        page,
+        limit,
+        searchQuery,
+        isActive,
+        wardId,
+      },
+      GetStreetPayloadSchema,
+    );
+
+    const where: StreetWhereInput = {
+      ...(parsedData.searchQuery
+        ? {
+            OR: [
+              {
+                code: {
+                  contains: parsedData.searchQuery,
+                  mode: "insensitive",
+                },
+              },
+              {
+                name: {
+                  contains: parsedData.searchQuery,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : undefined),
+
+      ...(typeof parsedData.isActive === "boolean" && {
+        isActive: parsedData.isActive,
+      }),
+      wardId,
+    };
+    const [streets, totalItems] = await Promise.all([
+      prisma.street.findMany({
+        select: { id: true, name: true, code: true },
+        where,
+        skip: (parsedData.page - 1) * parsedData.limit,
+        take: parsedData.limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.street.count({ where }),
+    ]);
+    const pagination = {
+      totalItems,
+      itemCount: streets.length,
+      itemsPerPage: parsedData.limit,
+      totalPages: Math.max(1, Math.ceil(totalItems / parsedData.limit)),
+      currentPage: parsedData.page,
+    };
+    return {
+      success: true,
+      message: "Streets details successfully retrieved",
+      data: { streets, pagination },
+    };
+  } catch (error) {
+    Logger.error("Error getting Streets details:", error);
+    const message =
+      error instanceof AppError
+        ? error.message
+        : error instanceof APIError
+          ? "Authentication service is currently unavailable."
+          : handlePrismaError(error);
+    return {
+      success: false,
+      message: message,
+      data: null,
+    };
+  }
+}
+
+export type TStreamlinedStreet = Pick<Street, "code" | "id" | "name">;

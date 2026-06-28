@@ -244,3 +244,106 @@ export async function getWardById({ wardId }: { wardId: string }): Promise<{
     };
   }
 }
+
+export async function getWardsSearched({
+  page = 1,
+  limit = PAGE_LIMITS.SM,
+  searchQuery,
+  isActive,
+}: IGetServiceAreasProps): Promise<{
+  success: boolean;
+  message: string;
+  data: {
+    wards: TStreamLinedWard[];
+    pagination: IPagination;
+  } | null;
+}> {
+  try {
+    const user = await getAuthUser();
+    if (!user) {
+      return {
+        success: false,
+        data: null,
+        message: "Unauthorized. Sign in to access service area details",
+      };
+    }
+    if (!user.isActive) {
+      return {
+        success: false,
+        data: null,
+        message: "Unauthorized. Disabled account.",
+      };
+    }
+    const parsedData = sanitizePayload(
+      {
+        page,
+        limit,
+        searchQuery,
+        isActive,
+      },
+      GetServiceAreasPayloadSchema,
+    );
+
+    const where: WardWhereInput = {
+      ...(parsedData.searchQuery
+        ? {
+            OR: [
+              {
+                code: {
+                  contains: parsedData.searchQuery,
+                  mode: "insensitive",
+                },
+              },
+              {
+                name: {
+                  contains: parsedData.searchQuery,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : undefined),
+
+      ...(typeof parsedData.isActive === "boolean" && {
+        isActive: parsedData.isActive,
+      }),
+    };
+    const [wards, totalItems] = await Promise.all([
+      prisma.ward.findMany({
+        select: { id: true, code: true, name: true },
+        where,
+        skip: (parsedData.page - 1) * parsedData.limit,
+        take: parsedData.limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.ward.count({ where }),
+    ]);
+    const pagination = {
+      totalItems,
+      itemCount: wards.length,
+      itemsPerPage: parsedData.limit,
+      totalPages: Math.max(1, Math.ceil(totalItems / parsedData.limit)),
+      currentPage: parsedData.page,
+    };
+    return {
+      success: true,
+      message: "Service Areas details successfully retrieved",
+      data: { wards, pagination },
+    };
+  } catch (error) {
+    Logger.error("Error getting Service Areas details:", error);
+    const message =
+      error instanceof AppError
+        ? error.message
+        : error instanceof APIError
+          ? "Authentication service is currently unavailable."
+          : handlePrismaError(error);
+    return {
+      success: false,
+      message: message,
+      data: null,
+    };
+  }
+}
+
+export type TStreamLinedWard = Pick<Ward, "id" | "code" | "name">;

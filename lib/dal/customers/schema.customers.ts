@@ -15,7 +15,7 @@ export const GetCustomersPayloadSchema = z
       .number("Limit must be a number")
       .int("Limit must be an integer")
       .min(minLimit, `Limit cannot be less than  ${minLimit}`)
-      .max(maxLimit, `Limit cannot exceed 5 ${maxLimit}`)
+      .max(maxLimit, `Limit cannot exceed ${maxLimit}`)
       .default(minLimit),
     searchQuery: z
       .string("Please provide search query")

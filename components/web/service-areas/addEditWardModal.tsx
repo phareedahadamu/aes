@@ -14,6 +14,7 @@ import { Info } from "lucide-react";
 import { normalizeText } from "@/lib/utils";
 import type { Ward } from "@/generated/prisma/client";
 import { Dispatch, SetStateAction } from "react";
+import { TButtonVariant } from "@/lib/types/general";
 
 const AddEditWardForm = dynamic(() => import("./addEditWardForm"), {
   ssr: false,
@@ -28,18 +29,21 @@ export default function AddEditWardModal({
   setIsOpen,
   action,
   ward,
+  variant = "default",
 }:
   | {
       ward: Ward;
       action: "edit";
       isOpen: boolean;
       setIsOpen: Dispatch<SetStateAction<boolean>>;
+      variant?: TButtonVariant;
     }
   | {
       ward?: never;
       action: "add";
       isOpen?: never;
       setIsOpen?: never;
+      variant?: TButtonVariant;
     }) {
   const normalizedAction = normalizeText(action);
   const description =
@@ -53,8 +57,12 @@ export default function AddEditWardModal({
       {action === "add" && (
         <DialogTrigger
           render={
-            <Button className="py-3! px-11! rounded-mid gap-2.5! text-base!">
-              <Plus className="size-6" /> {normalizedAction} Ward
+            <Button
+              className="py-3! px-11! rounded-mid gap-2.5! text-base!"
+              variant={variant}
+            >
+              <Plus className={`${variant === "link" ? "size-3" : "size-6"}`} />{" "}
+              {normalizedAction} Ward
             </Button>
           }
         />

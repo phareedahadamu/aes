@@ -2,22 +2,23 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useDebounce } from "./useDebounce";
 import { useState } from "react";
 import {
-  getCustomersSearched,
-  StreamlinedCustomerType,
-} from "../dal/customers/getCustomers";
+  getStreetsSearched,
+  TStreamlinedStreet,
+} from "../dal/service-areas/streets/getStreets";
 import { PAGE_LIMITS } from "../constants/general";
 
-export function useCustomerSearch() {
+export function useStreetSearch({ wardId }: { wardId: string }) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
   const query = useInfiniteQuery({
     queryKey: ["customers-search", debouncedSearch],
     initialPageParam: 1,
     queryFn: async ({ pageParam }) => {
-      const response = await getCustomersSearched({
+      const response = await getStreetsSearched({
         searchQuery: debouncedSearch.length > 0 ? debouncedSearch : undefined,
         page: pageParam,
         limit: PAGE_LIMITS.LG,
+        wardId,
       });
 
       if (!response.success) return null;
@@ -31,16 +32,16 @@ export function useCustomerSearch() {
       return currentPage < totalPages ? currentPage + 1 : undefined;
     },
   });
-  const customers = query.data?.pages
+  const streets = query.data?.pages
     ? query.data?.pages.flatMap(
-        (page) => page?.data?.customers ?? ([] as StreamlinedCustomerType[]),
+        (page) => page?.data?.streets ?? ([] as TStreamlinedStreet[]),
       )
-    : ([] as StreamlinedCustomerType[]);
+    : ([] as TStreamlinedStreet[]);
 
   return {
     search,
     setSearch,
-    customers,
+    streets,
     isLoading: query.isLoading,
     isFetchingNextPage: query.isFetchingNextPage,
     hasNextPage: query.hasNextPage,
